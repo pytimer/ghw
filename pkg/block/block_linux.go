@@ -189,6 +189,19 @@ func diskWWN(paths *linuxpath.Paths, disk string) string {
 	return util.UNKNOWN
 }
 
+func diskFilesystemType(paths *linuxpath.Paths, disk string) string {
+	info, err := udevInfoDisk(paths, disk)
+	if err != nil {
+		return util.UNKNOWN
+	}
+
+	if fstype, ok := info["ID_FS_TYPE"]; ok {
+		return fstype
+	}
+
+	return util.UNKNOWN
+}
+
 // diskPartitions takes the name of a disk (note: *not* the path of the disk,
 // but just the name. In other words, "sda", not "/dev/sda" and "nvme0n1" not
 // "/dev/nvme0n1") and returns a slice of pointers to Partition structs
@@ -317,6 +330,7 @@ func disks(ctx *context.Context, paths *linuxpath.Paths) []*Disk {
 		serialNo := diskSerialNumber(paths, dname)
 		wwn := diskWWN(paths, dname)
 		removable := diskIsRemovable(paths, dname)
+		fstype := diskFilesystemType(paths, dname)
 
 		if storageController == STORAGE_CONTROLLER_LOOP && size == 0 {
 			// We don't care about unused loop devices...
@@ -335,6 +349,7 @@ func disks(ctx *context.Context, paths *linuxpath.Paths) []*Disk {
 			Model:                  model,
 			SerialNumber:           serialNo,
 			WWN:                    wwn,
+			Type:                   fstype,
 		}
 
 		parts := diskPartitions(ctx, paths, dname)
