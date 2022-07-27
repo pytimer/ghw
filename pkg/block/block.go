@@ -170,6 +170,11 @@ type Disk struct {
 	WWN          string       `json:"wwn"`
 	Partitions   []*Partition `json:"partitions"`
 	Type         string       `json:"type"`
+	UUID         string       `json:"uuid"`
+	Label        string       `json:"label"`
+	MountPoint   string       `json:"mount_point"`
+	IsReadOnly   bool         `json:"read_only"`
+	BusID        string       `json:"bus_id"`
 	// TODO(jaypipes): Add PCI field for accessing PCI device information
 	// PCI *PCIDevice `json:"pci"`
 }
